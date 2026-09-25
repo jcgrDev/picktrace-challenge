@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="events_title">Field events</string>
+    <string name="events_add">Record event</string>
+    <string name="events_empty">No events yet. Record one with the + button.</string>
+    <string name="events_row_ids">%1$s · %2$s</string>
+    <string name="events_row_quantity">Qty %1$d</string>
+    <string name="events_status_pending">Pending</string>
+    <string name="events_status_synced">Synced</string>
+    <string name="events_status_failed">Failed</string>
+    <string name="events_filter_all">All</string>
+    <string name="events_empty_filtered">No events with this status.</string>
+    <string name="detail_title">Event</string>
+    <string name="detail_back">Back</string>
+    <string name="detail_worker">Worker</string>
+    <string name="detail_block">Block</string>
+    <string name="detail_quantity">Quantity</string>
+    <string name="detail_recorded_at">Recorded at</string>
+    <string name="detail_status">Status</string>
+    <string name="detail_attempts">Delivery attempts: %1$d</string>
+    <string name="detail_edit">Edit quantity</string>
+    <string name="detail_delete">Delete</string>
+    <string name="detail_save">Save</string>
+    <string name="detail_cancel">Cancel</string>
+    <string name="detail_delete_title">Delete this event?</string>
+    <string name="detail_delete_body">It has not been synced yet, so it will never be sent.</string>
+    <string name="detail_delete_confirm">Delete event</string>
+    <string name="detail_read_only">Synced events are read-only</string>
+    <string name="detail_in_flight">Syncing now, try again when it finishes</string>
+    <string name="detail_storage_full">Storage is full. The change was not saved.</string>
+    <string name="detail_error_quantity_not_number">Enter a whole number</string>
+    <string name="detail_error_quantity_not_positive">Quantity must be at least 1</string>
+</resources>

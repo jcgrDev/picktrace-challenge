@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="capture_title">Record event</string>
+    <string name="capture_back">Back</string>
+    <string name="capture_worker_id">Worker ID</string>
+    <string name="capture_block_id">Block ID</string>
+    <string name="capture_quantity">Quantity</string>
+    <string name="capture_recorded_at">Recorded at %1$s</string>
+    <string name="capture_save">Save</string>
+    <string name="capture_error_worker_missing">Enter a worker ID</string>
+    <string name="capture_error_block_missing">Enter a block ID</string>
+    <string name="capture_error_quantity_not_number">Enter a whole number</string>
+    <string name="capture_error_quantity_not_positive">Quantity must be at least 1</string>
+    <string name="capture_saved">Saved offline. It will sync when a network is available.</string>
+    <string name="capture_storage_full">Storage is full. The event was not saved.</string>
+</resources>
