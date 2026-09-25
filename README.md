@@ -21,18 +21,7 @@ resume from.
 
 ## Module layout
 
-```
-:app ──> :feature:capture, :feature:events, :core:data, :core:sync, :core:network, :core:designsystem
-         :core:testing (debugImplementation only, for FakeSyncServer)
-:feature:capture, :feature:events ──> :core:data, :core:model, :core:designsystem
-:core:data ──> :core:database, :core:sync, :core:model
-:core:sync ──> :core:database, :core:network, :core:model
-:core:network ──> :core:model
-:core:database ──> :core:model
-:core:designsystem ──> (nothing internal)
-:core:model ──> (nothing)
-:core:testing ──> :core:model, :core:database, :core:network, :core:sync
-```
+![Figure 1: module dependencies](docs/diagrams/01-module-dependencies.png)
 
 | Module | Owns |
 |---|---|
@@ -58,11 +47,7 @@ processing is KSP only; there is no kapt anywhere.
 
 Clean Architecture with MVVM on top, unidirectional:
 
-```
-Compose screen ──event──▶ ViewModel ──▶ Repository ──▶ Room (one transaction)
-      ▲                                                     │
-      └────────── StateFlow<UiState> ◀── Flow ◀─────────────┘
-```
+![Figure 2: unidirectional data flow](docs/diagrams/02-data-flow.png)
 
 ViewModels expose an immutable `UiState` as a `StateFlow` built from repository `Flow`s. They
 never hold a copy of an event; when sync flips a row to `synced`, the list updates because Room
@@ -96,21 +81,7 @@ moves backwards, the counter keeps the stamp increasing.
 
 ## Event status × op state
 
-```
-                 record()
-   (none) ───────────────────────▶ PENDING/QUEUED ◀──────────────┐
-                                    │    ▲  │                     │ transport failure,
-                          claim     │    │  │ edit (qty, new hlc) │ attempts < 5
-                          batch     ▼    │  └──────┐              │ (and run start reset)
-                               PENDING/IN_FLIGHT ──┴──────────────┘
-                                │        │        │
-                  acked         │        │        │ transport failure, attempts == 5  → FAILED (EXHAUSTED)
-     (op deleted, same tx)      │        │ rejected                                   → FAILED (REJECTED)
-                                ▼        ▼ other 4xx on batch                         → FAILED (REFUSED)
-                          SYNCED/(no op)   FAILED/FAILED
-                          read-only          │  retry(): new op_id, attempts=0, new hlc, keep seq
-                                             └────────────────────────────▶ PENDING/QUEUED
-```
+![Figure 3: event status × outbox op state](docs/diagrams/03-event-state-machine.png)
 
 The user-facing status is derived: `pending` means an op row exists and isn't failed, `synced`
 means the op row is gone, `failed` means the op row is kept with a reason. The status column on
@@ -131,6 +102,8 @@ backend owner; the alternative (a new `op_id` per edit) trades it for a duplicat
 the contract also doesn't answer yet.
 
 ## The sync run
+
+![Figure 4: one sync run](docs/diagrams/04-sync-run.png)
 
 `SyncEngine.run()` is a loop of small transactions:
 
