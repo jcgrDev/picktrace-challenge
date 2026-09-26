@@ -92,6 +92,27 @@ Greenfield. Built in approved phases with Spec Kit (`specs/`, `.specify/`).
 - **HLC node id**: one random id per install, stored in Room.
 - **Delivery order**: by local recording sequence, oldest first, batches of 50 (configurable).
 
+## Backend (harvest sync POC, approved 2026-09-25)
+
+- Design: `specs/002-harvest-sync-backend/spec.md`; plan, data model and contracts beside it.
+- Lives in `backend/` as a **standalone Gradle build** (subprojects `:server`, `:loadtest`), not
+  part of the Android build. Package `com.jcgrdev.picktrace.sync`.
+- Stack: Kotlin 2.4.20, JDK 17, Ktor 3.5.2 (Netty, content negotiation, status pages, call id,
+  call logging, test host; CIO client in `:loadtest`), HikariCP 7.1.0, PostgreSQL JDBC 42.7.12
+  with plain parameterised JDBC, Flyway 13.8.0, kotlinx.serialization 1.11.0, coroutines 1.11.0,
+  Logback (look up version when added), JUnit Jupiter 6.1.3, Testcontainers 2.0.5. PostgreSQL 18.
+  Versions looked up 2026-09-25; re-check when adding.
+- Contract additions on top of the client contract above (approved 2026-09-25):
+  - full path `POST /v1/sync/push` (client base URL ends in `/v1`);
+  - `rejected[]` entries may carry an optional `detail` string; clients ignore unknown keys;
+  - per-op reasons: `INVALID_RECORD`, `OP_CONTENT_MISMATCH`, `ID_CONFLICT`, `UNSUPPORTED_OP_KIND`
+    (all permanent); whole-batch: 400 `MALFORMED_REQUEST`, 401 `MISSING_DEVICE_ID`,
+    413 `BATCH_TOO_LARGE`, 415, 429 `BUSY` + `Retry-After`, 503 `DATABASE_UNAVAILABLE` + `Retry-After`, 500.
+- Rules: PostgreSQL is the single source of truth (no cache, no in-memory dedup); record and op
+  row written in one READ COMMITTED transaction, rows supplied sorted by (entityId, opId); acks
+  built only from committed rows; nothing external inside a transaction; no `GlobalScope` or
+  `runBlocking` in `:server` (`:loadtest` main may block).
+
 ## Non-negotiable principles (every phase)
 
 1. Room is the single source of truth; the UI observes Room `Flow`s only.
