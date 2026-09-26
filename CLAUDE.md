@@ -9,7 +9,7 @@ Greenfield. Built in approved phases with Spec Kit (`specs/`, `.specify/`).
 - App name: **picktrace-challenge**
 - Package: `com.jcgrdev.picktracechallenge` (proposed; change before Phase 1 if wrong)
 - Feature spec: `specs/001-field-event-sync/spec.md`
-- Session transcript: `interview-session.md` (refreshed with `/export interview-session.md`; committed)
+- Session transcript: `interview-session-full.md` (refreshed with `/export interview-session-full.md`; committed)
 
 ## Domain (first iteration)
 
@@ -69,7 +69,7 @@ Greenfield. Built in approved phases with Spec Kit (`specs/`, `.specify/`).
 - `GET /sync/snapshot?page=` -> `{ "entities": [Change], "page": Int, "hasMore": Boolean, "cursor": Long }` (confirmed shape).
 - `429` + `Retry-After` and `5xx` are retryable; other `4xx` are not.
 - Real base URL comes from `BuildConfig`. Debug builds install `FakeSyncServer`.
-- DTOs as agreed in the setup reply (see `interview-session.md`): `PendingOpDto`, `FieldEventFields`,
+- DTOs as agreed in the setup reply (see `interview-session-full.md`): `PendingOpDto`, `FieldEventFields`,
   `PushRequest`, `PushResponse`, `RejectedOp`, `ChangeDto`, `PullResponse`, `SnapshotResponse`, `SyncApi`.
   `fields` travels as `JsonObject`; `:core:sync` owns the typed codec per entity type.
 
@@ -134,4 +134,4 @@ Greenfield. Built in approved phases with Spec Kit (`specs/`, `.specify/`).
 
 ## Open decisions
 
-- None. Setup questions 1 to 12 answered on 2026-09-25 (see `interview-session.md`).
+- None. Setup questions 1 to 12 answered on 2026-09-25 (see `interview-session-full.md`).

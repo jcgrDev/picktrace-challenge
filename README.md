@@ -252,5 +252,5 @@ Deferred by design, with the seams in place:
 - **Worker and block master data.** Ids are opaque strings the user types.
 
 The project is developed in approved phases with Spec Kit. `specs/001-field-event-sync/tasks.md`
-is the task list; `interview-session.md` is the transcript of the setup decisions that `CLAUDE.md`
+is the task list; `interview-session-full.md` is the transcript of the setup decisions that `CLAUDE.md`
 summarises.
