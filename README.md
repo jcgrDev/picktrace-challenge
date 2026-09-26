@@ -8,6 +8,20 @@ saved is never lost, never sent twice, and never shown in a state the database d
 This document explains how that guarantee is built. The full design lives in
 [`specs/001-field-event-sync/`](specs/001-field-event-sync/) (spec, plan, data model, contracts).
 
+## Contents
+
+- [The approach in one paragraph](#the-approach-in-one-paragraph)
+- [Module layout](#module-layout)
+- [Layers and data flow](#layers-and-data-flow)
+- [The outbox](#the-outbox)
+- [Event status × op state](#event-status--op-state)
+- [The sync run](#the-sync-run)
+- [Scheduling and triggers](#scheduling-and-triggers)
+- [Testing against a server that doesn't exist](#testing-against-a-server-that-doesnt-exist)
+- [The backend design](#the-backend-design)
+- [Building and running](#building-and-running)
+- [Status and what's deliberately not here](#status-and-whats-deliberately-not-here)
+
 ## The approach in one paragraph
 
 Every write goes to Room first, and the UI only ever renders Room `Flow`s. Saving an event inserts
@@ -175,6 +189,29 @@ UI tests. There is no `androidTest` source set. The tests that matter most:
 | `SyncEngineRelaunchTest` | Server processes a batch but the response is lost; a new engine on the same DB file re-pushes and the server stored each entity once. |
 | `SyncSchedulerTest` | Overlapping requests never deliver an `op_id` twice. |
 | `ReadOnlyRulesTest` | Edit/delete of a synced or in-flight event is refused and the DB is unchanged. |
+
+## The backend design
+
+The server side has a design document but no code yet:
+[`specs/002-harvest-sync-backend/spec.md`](specs/002-harvest-sync-backend/spec.md). It covers
+the one property the backend POC must prove: every record a device sends is stored exactly once,
+and the server never acks a record it has not committed, under hundreds of concurrent devices.
+
+The short version:
+
+- `POST /v1/sync/push` takes the same op envelope this app already sends. Each op is reduced to a
+  fingerprint of its canonical content. Same `opId` with the same content returns the stored ack;
+  same `opId` with different content is rejected (`OP_CONTENT_MISMATCH`), never acked.
+- Two PostgreSQL tables, `harvest_record` and `op_log`, keyed by the client UUIDs. Duplicates are
+  decided by the unique indexes, not by application checks, so two server instances need no
+  coordination beyond sharing the database.
+- One short READ COMMITTED transaction per batch, rows supplied in a fixed key order so overlapping
+  batches cannot deadlock, and acks built only from what the database reports as committed.
+- Overload gets a fast `429` with `Retry-After` instead of a queue; late records are flagged, not
+  rejected; invalid records are rejected one by one without blocking the batch.
+
+The document ends with the failure-scenario table, the load-test invariants, and the path to v1
+(edits, voids, versions, real auth), none of which change the push contract.
 
 ## Building and running
 
