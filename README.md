@@ -5,8 +5,13 @@ with no connectivity, and pushing them to a backend once the network comes back.
 
 The interesting part is not the three screens. It is the guarantee behind them: an event that was
 saved is never lost, never sent twice, and never shown in a state the database doesn't back.
-This document explains how that guarantee is built. The full design lives in
-[`specs/001-field-event-sync/`](specs/001-field-event-sync/) (spec, plan, data model, contracts).
+This document explains how that guarantee is built. The full design lives in two Spec Kit
+feature directories:
+
+- [`specs/001-field-event-sync/`](specs/001-field-event-sync/): the Android app (spec, plan,
+  data model, contracts, tasks).
+- [`specs/002-harvest-sync-backend/`](specs/002-harvest-sync-backend/): the backend POC that
+  stores every record exactly once (design document, plan, data model, contracts, tasks).
 
 ## Contents
 
